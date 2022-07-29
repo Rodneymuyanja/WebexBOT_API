@@ -25,7 +25,7 @@ namespace WebexBOT_API.Controllers
 
 
         [HttpPost]
-        public ActionResult<Response> EventHandler(WebexRequest webexRequest)
+        public object EventHandler(WebexRequest webexRequest)
         {
             string WEBEX_HMACSHA1HASH = Request.Headers["X-Spark-Signature"];
             string WEBEX_JSONPAYLOAD = JsonSerializer.Serialize(webexRequest);
@@ -33,7 +33,12 @@ namespace WebexBOT_API.Controllers
 
             if (HASH_VALIDITY)
             {
-
+                _logic.HandleRequest(webexRequest);
+                return Ok(HASH_VALIDITY);
+            }
+            else
+            {
+                return BadRequest(HASH_VALIDITY);
             }
 
         }

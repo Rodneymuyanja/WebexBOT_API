@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebexBOT_API.Entities;
 using WebexBOT_API.Interfaces;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace WebexBOT_API.Logic
 {
@@ -12,6 +15,7 @@ namespace WebexBOT_API.Logic
         private readonly IVerification _HashVerification;
         private readonly IEvent _CreateEvent;
         private readonly IEvent _DeleteEvent;
+        private Data _data;
 
         List<IEvent> events = new List<IEvent>();
         private Dictionary<string, List<IEvent>> Resources = new Dictionary<string, List<IEvent>>();
@@ -30,6 +34,7 @@ namespace WebexBOT_API.Logic
         {
             string resource = webexRequest.Resource;
             Event k = null;
+            _data = webexRequest.Data;
 
             if (string.IsNullOrEmpty(resource))
             {
@@ -66,10 +71,52 @@ namespace WebexBOT_API.Logic
         }
 
 
-        public void HandleEvent(Event @event)
+        public void HandleEvent(Event k)
         {
-
+            if (k.Name == "created")
+            {
+                HandleCreateEvent(k);
+            }
         }
 
+        private void HandleCreateEvent(Event k)
+        {
+            ///we need to pick the message details from webex
+            ///
+            string messageId = _data.Id;
+            Message message = null;
+            Response BOT_response = null;   
+            string WEBEX_ENDPOINT = "https://webexapis.com/v1/messages/" + messageId;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(WEBEX_ENDPOINT);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            using (HttpResponseMessage response = client.GetAsync(WEBEX_ENDPOINT).Result)
+            {
+                using (HttpContent content = response.Content)
+                {
+                    var json = content.ReadAsStringAsync().Result;
+                    message = JsonSerializer.Deserialize<Message>(json);
+                }
+            }
+
+            if (message != null)
+            {
+                BOT_response.Text = "Hi, not cool that you don't greet";
+                //https://webexapis.com/v1/messages
+                if (message.Text.Contains("hi"))
+                {
+                    BOT_response.Text = "Hi, i received your message";
+                }
+
+
+                BOT_response.RoomId = message.RoomId;
+                BOT_response.ParentId = message.Id;
+                BOT_response.ToPersonEmail = message.PersonEmail;
+
+                // make post request right here
+            }
+        }
     }
 }
