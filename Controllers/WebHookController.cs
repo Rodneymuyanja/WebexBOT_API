@@ -31,6 +31,11 @@ namespace WebexBOT_API.Controllers
             string WEBEX_JSONPAYLOAD = JsonSerializer.Serialize(webexRequest);
             bool HASH_VALIDITY = _logic.VerifyHash(WEBEX_JSONPAYLOAD, WEBEX_HMACSHA1HASH);
 
+            if (HASH_VALIDITY)
+            {
+
+            }
+
         }
     }
 }
