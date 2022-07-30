@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebexBOT_API.Entities;
+using WebexBOT_API.Logic;
 using WebexBOT_API.Interfaces;
 using System.Text;
 using System.Text.Json;
@@ -16,12 +17,12 @@ namespace WebexBOT_API.Controllers
     [Route("[controller]")]
     public class WebHookController: ControllerBase
     {
-        private readonly ILogic _logic;
+        Logic.Logic _logic;
 
-        public WebHookController(ILogic logic)
-        {
-            _logic = logic;
-        }
+        //public WebHookController(ILogic logic)
+        //{
+        //    _logic = logic;
+        //}
 
 
         [HttpPost]

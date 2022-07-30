@@ -6,7 +6,7 @@ using WebexBOT_API.Interfaces;
 
 namespace WebexBOT_API.Entities
 {
-    public class Event: IEvent
+    public class Event
     {
         public Event(string name, string description)
         {

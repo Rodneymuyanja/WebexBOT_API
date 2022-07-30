@@ -15,17 +15,17 @@ namespace WebexBOT_API.Logic
 {
     public class Logic : ILogic
     {
-        private readonly IVerification _HashVerification;
-        private readonly IEvent _CreateEvent;
-        private readonly IEvent _DeleteEvent;
+        private readonly Verification _HashVerification;
+        private readonly Event _CreateEvent;
+        private readonly Event _DeleteEvent;
         private Data _data;
         readonly IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
            .AddJsonFile("appsettings.json", false, true);
 
 
-        List<IEvent> events = new List<IEvent>();
-        private Dictionary<string, List<IEvent>> Resources = new Dictionary<string, List<IEvent>>();
-        public Logic(IVerification verification)
+        List<Event> events = new List<Event>();
+        private Dictionary<string, List<Event>> Resources = new Dictionary<string, List<Event>>();
+        public Logic(Verification verification)
         {
             _HashVerification = verification;
             _CreateEvent = new Event("Create", "This indicates a new message has been added into the space");
@@ -48,7 +48,7 @@ namespace WebexBOT_API.Logic
             }
             else
             {
-                if(Resources.TryGetValue(resource, out List<IEvent> events))
+                if(Resources.TryGetValue(resource, out List<Event> events))
                 {
                     k = (Event)(from e in events
                               where e.Name == webexRequest.Name

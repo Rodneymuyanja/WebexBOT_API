@@ -3,13 +3,14 @@ using WebexBOT_API.Interfaces;
 
 namespace WebexBOT_API.Entities
 {
-    public class Message : IMessage
+    public class Message
     {
-        public string Id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string RoomId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string PersonId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string PersonEmail { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Text { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public DateTime Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    }
+           //public DateTime Created { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Id { get; set; }
+        public string RoomId { get; set; }
+        public string PersonId { get; set; }
+        public string PersonEmail { get; set; }
+        public string Text { get; set; }
+        public DateTime Created { get; set; }
+    }   
 }
