@@ -10,6 +10,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace WebexBOT_API.Logic
 {
@@ -28,8 +29,8 @@ namespace WebexBOT_API.Logic
         public Logic(Verification verification)
         {
             _HashVerification = verification;
-            _CreateEvent = new Event("Create", "This indicates a new message has been added into the space");
-            _DeleteEvent = new Event("Delete", "This indicates a message has been deleted from the space");
+            _CreateEvent = new Event("created", "This indicates a new message has been added into the space");
+            _DeleteEvent = new Event("deleted", "This indicates a message has been deleted from the space");
             events.Add(_CreateEvent);
             events.Add(_DeleteEvent);
             Resources.Add("messages",events);
@@ -41,6 +42,7 @@ namespace WebexBOT_API.Logic
             string resource = webexRequest.Resource;
             Event k = null;
             _data = webexRequest.Data;
+            dynamic v = null;
 
             if (string.IsNullOrEmpty(resource))
             {
@@ -50,17 +52,20 @@ namespace WebexBOT_API.Logic
             {
                 if(Resources.TryGetValue(resource, out List<Event> events))
                 {
-                    k = (Event)(from e in events
-                              where e.Name == webexRequest.Name
-                              select e);
+                    v  = from e in events
+                              where e.Name == webexRequest.Event
+                              select e;
                 }
             }
 
 
-            if (k != null)
+            foreach (Event item in v)
             {
-                HandleEvent(k);
+                HandleEvent(item);
             }
+
+                
+            
         }
 
         public bool VerifyHash(string PayLoad, string WEBEX_HASH)
@@ -91,7 +96,7 @@ namespace WebexBOT_API.Logic
             ///
             string messageId = _data.Id;
             Message message = null;
-            Response BOT_response = null;
+            Response BOT_response = new Response();
 
             IConfigurationRoot root = configurationBuilder.Build();
 
@@ -106,7 +111,7 @@ namespace WebexBOT_API.Logic
                 using (HttpContent content = response.Content)
                 {
                     var json = content.ReadAsStringAsync().Result;
-                    message = JsonSerializer.Deserialize<Message>(json);
+                    message = JsonConvert.DeserializeObject<Message>(json);
                 }
             }
 
@@ -125,11 +130,11 @@ namespace WebexBOT_API.Logic
                 BOT_response.ToPersonEmail = message.PersonEmail;
 
                 // make post request right here
-                string messagePayLoad = JsonSerializer.Serialize(BOT_response);
+                string messagePayLoad = JsonConvert.SerializeObject(BOT_response);
 
                 var request = new HttpRequestMessage(HttpMethod.Post, messageURL);
                 request.Content = new StringContent(messagePayLoad, Encoding.UTF8, "application/json");
-                request.Headers.Add("Bearer", root["Bearer"]);
+                //request.Headers.Add("Bearer", root["Bearer"]);
 
                 using (var ResponseOnMessageSend = client.SendAsync(request))
                 {

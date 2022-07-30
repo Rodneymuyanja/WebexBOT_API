@@ -31,19 +31,19 @@ namespace WebexBOT_API.Controllers
             Verification verification = new Verification();
             Logic.Logic _logic = new Logic.Logic(verification);
 
-            string WEBEX_HMACSHA1HASH = Request.Headers["X-Spark-Signature"];
-            string WEBEX_JSONPAYLOAD = JsonSerializer.Serialize(webexRequest);
-            bool HASH_VALIDITY = _logic.VerifyHash(WEBEX_JSONPAYLOAD, WEBEX_HMACSHA1HASH);
+            //string WEBEX_HMACSHA1HASH = Request.Headers["X-Spark-Signature"];
+            //string WEBEX_JSONPAYLOAD = JsonSerializer.Serialize(webexRequest);
+            //bool HASH_VALIDITY = _logic.VerifyHash(WEBEX_JSONPAYLOAD, WEBEX_HMACSHA1HASH);
 
-            if (HASH_VALIDITY)
-            {
+            //if (HASH_VALIDITY)
+            //{
                 _logic.HandleRequest(webexRequest);
-                return Ok(HASH_VALIDITY);
-            }
-            else
-            {
-                return BadRequest(HASH_VALIDITY);
-            }
+                return Ok();
+            //}
+            //else
+            //{
+            //    return BadRequest(HASH_VALIDITY);
+            //}
 
         }
     }
