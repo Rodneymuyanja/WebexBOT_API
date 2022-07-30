@@ -15,9 +15,9 @@ namespace WebexBOT_API.Logic
 {
     public class Logic : ILogic
     {
-        private readonly Verification _HashVerification;
-        private readonly Event _CreateEvent;
-        private readonly Event _DeleteEvent;
+        private  Verification _HashVerification;
+        private  Event _CreateEvent;
+        private  Event _DeleteEvent;
         private Data _data;
         readonly IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
            .AddJsonFile("appsettings.json", false, true);

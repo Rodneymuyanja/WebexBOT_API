@@ -17,7 +17,7 @@ namespace WebexBOT_API.Controllers
     [Route("[controller]")]
     public class WebHookController: ControllerBase
     {
-        Logic.Logic _logic;
+        
 
         //public WebHookController(ILogic logic)
         //{
@@ -28,6 +28,9 @@ namespace WebexBOT_API.Controllers
         [HttpPost]
         public object EventHandler(WebexRequest webexRequest)
         {
+            Verification verification = new Verification();
+            Logic.Logic _logic = new Logic.Logic(verification);
+
             string WEBEX_HMACSHA1HASH = Request.Headers["X-Spark-Signature"];
             string WEBEX_JSONPAYLOAD = JsonSerializer.Serialize(webexRequest);
             bool HASH_VALIDITY = _logic.VerifyHash(WEBEX_JSONPAYLOAD, WEBEX_HMACSHA1HASH);

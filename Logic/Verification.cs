@@ -10,19 +10,14 @@ using System.Text;
 
 namespace WebexBOT_API.Logic
 {
-    public class Verification : IVerification
+    public class Verification 
     {
 
         HMACSHA1 HMACSHA1 = new HMACSHA1();
         readonly IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", false,true);
 
-        public byte[] BytesFromString(string PayLoadData)
-        {
-
-            
-            throw new NotImplementedException();
-        }
+      
 
         public string HashData(string PayLoad)
         {
@@ -38,9 +33,6 @@ namespace WebexBOT_API.Logic
             throw new NotImplementedException();
         }
 
-        public string StringFromBytes(byte[] Bytes)
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }
