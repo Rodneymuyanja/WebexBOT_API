@@ -37,8 +37,8 @@ namespace WebexBOT_API
                 });
 
                 //using reflection
-                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+                //var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                //c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 
             });
         }
@@ -50,7 +50,7 @@ namespace WebexBOT_API
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PhoneValidationAPI v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WEBEX BOT v1"));
             }
 
             app.UseHttpsRedirection();

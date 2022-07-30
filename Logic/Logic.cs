@@ -7,6 +7,9 @@ using WebexBOT_API.Interfaces;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
+using System.Text;
+using System.IO;
 
 namespace WebexBOT_API.Logic
 {
@@ -16,6 +19,9 @@ namespace WebexBOT_API.Logic
         private readonly IEvent _CreateEvent;
         private readonly IEvent _DeleteEvent;
         private Data _data;
+        readonly IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
+           .AddJsonFile("appsettings.json", false, true);
+
 
         List<IEvent> events = new List<IEvent>();
         private Dictionary<string, List<IEvent>> Resources = new Dictionary<string, List<IEvent>>();
@@ -75,21 +81,24 @@ namespace WebexBOT_API.Logic
         {
             if (k.Name == "created")
             {
-                HandleCreateEvent(k);
+                HandleCreateEvent();
             }
         }
 
-        private void HandleCreateEvent(Event k)
+        private void HandleCreateEvent()
         {
             ///we need to pick the message details from webex
             ///
             string messageId = _data.Id;
             Message message = null;
-            Response BOT_response = null;   
+            Response BOT_response = null;
+
+            IConfigurationRoot root = configurationBuilder.Build();
+
             string WEBEX_ENDPOINT = "https://webexapis.com/v1/messages/" + messageId;
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(WEBEX_ENDPOINT);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", root["Bearer"]);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             using (HttpResponseMessage response = client.GetAsync(WEBEX_ENDPOINT).Result)
@@ -104,7 +113,7 @@ namespace WebexBOT_API.Logic
             if (message != null)
             {
                 BOT_response.Text = "Hi, not cool that you don't greet";
-                //https://webexapis.com/v1/messages
+                string messageURL = "https://webexapis.com/v1/messages";
                 if (message.Text.Contains("hi"))
                 {
                     BOT_response.Text = "Hi, i received your message";
@@ -116,6 +125,26 @@ namespace WebexBOT_API.Logic
                 BOT_response.ToPersonEmail = message.PersonEmail;
 
                 // make post request right here
+                string messagePayLoad = JsonSerializer.Serialize(BOT_response);
+
+                var request = new HttpRequestMessage(HttpMethod.Post, messageURL);
+                request.Content = new StringContent(messagePayLoad, Encoding.UTF8, "application/json");
+                request.Headers.Add("Bearer", root["Bearer"]);
+
+                using (var ResponseOnMessageSend = client.SendAsync(request))
+                {
+                    using (HttpResponseMessage result = ResponseOnMessageSend.Result)
+                    {
+                        using(var content = result.Content.ReadAsStringAsync())
+                        {
+                            var reader = new StreamReader(content.Result);
+                            string strContent = reader.ReadToEnd();
+
+                        }
+                    }
+                }
+                
+
             }
         }
     }
